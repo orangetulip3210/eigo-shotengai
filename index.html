@@ -556,14 +556,65 @@
       gap: 10px;
     }
 
+    /* ===== お店の看板（signboard） ===== */
     .shop-title {
-      font-size: 13px;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+      padding: 11px 22px 12px;
+      background: linear-gradient(#ffffff, #f3fbff);
+      border: 4px solid #5b3b2c;
+      border-radius: 16px;
+      box-shadow: 0 6px 0 rgba(91, 59, 44, 0.18);
+    }
+
+    /* 看板を吊るすヒモ＋留め具 */
+    .shop-title::before,
+    .shop-title::after {
+      content: "";
+      position: absolute;
+      top: -9px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #cdb49d;
+      border: 2px solid #5b3b2c;
+      box-shadow: 0 -7px 0 -2px #b89a82;
+    }
+
+    .shop-title::before {
+      left: 16px;
+    }
+
+    .shop-title::after {
+      right: 16px;
+    }
+
+    .shop-sign-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .shop-sign-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.12;
+    }
+
+    .shop-sign-en {
+      font-size: 17px;
       font-weight: 900;
       color: var(--sky);
-      background: #e0f4ff;
-      padding: 5px 14px;
-      border-radius: 999px;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
+    }
+
+    .shop-sign-ja {
+      font-size: 11px;
+      font-weight: 900;
+      color: #8a6a55;
     }
 
     .keeper-row {
@@ -1481,6 +1532,7 @@
     const shopTemplates = [
       {
         shop: "フルーツやさん",
+        shopEn: "Fruit Shop",
         shopIcon: "🍓",
         items: [
           { name: "Apple", plural: "apples", emoji: "🍎", shadow: "#ffb3a0" },
@@ -1490,6 +1542,7 @@
       },
       {
         shop: "パンやさん",
+        shopEn: "Bakery",
         shopIcon: "🥐",
         items: [
           { name: "Bread", plural: "pieces of bread", emoji: "🍞", shadow: "#e8c48f" },
@@ -1499,6 +1552,7 @@
       },
       {
         shop: "ぶんぼうぐやさん",
+        shopEn: "Stationery",
         shopIcon: "✏️",
         items: [
           { name: "Pencil", plural: "pencils", emoji: "✏️", shadow: "#ffd166" },
@@ -1508,6 +1562,7 @@
       },
       {
         shop: "おもちゃやさん",
+        shopEn: "Toy Shop",
         shopIcon: "🧸",
         items: [
           { name: "Ball", plural: "balls", emoji: "⚽", shadow: "#b6e3ff" },
@@ -1517,6 +1572,7 @@
       },
       {
         shop: "どうぶつショップ",
+        shopEn: "Pet Shop",
         shopIcon: "🐾",
         items: [
           { name: "Cat", plural: "cats", emoji: "🐱", shadow: "#ffd6a8" },
@@ -1551,6 +1607,7 @@
       return {
         id: index + 1,
         shop: template.shop,
+        shopEn: template.shopEn,
         shopIcon: template.shopIcon,
         missionItem: targetItem.name,
         missionCount: countCycle[index % countCycle.length],
@@ -1735,7 +1792,13 @@
       });
 
       document.querySelectorAll(".shop-title").forEach(el => {
-        el.textContent = `${level.shopIcon} ${level.shop}`;
+        el.innerHTML = `
+          <span class="shop-sign-icon">${level.shopIcon}</span>
+          <span class="shop-sign-text">
+            <span class="shop-sign-en">${level.shopEn}</span>
+            <span class="shop-sign-ja">${level.shop}</span>
+          </span>
+        `;
       });
 
       const heading = document.getElementById("titleHeading");
