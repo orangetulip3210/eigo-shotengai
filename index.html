@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>えいご商店街</title>
+  <title>えいごおつかいタウン</title>
   <style>
     * {
       margin: 0;
@@ -14,175 +14,539 @@
     }
 
     :root {
-      --pink:    #FF8FAB;
-      --yellow:  #FFD166;
-      --mint:    #06D6A0;
-      --sky:     #74C2E1;
-      --purple:  #C77DFF;
-      --bg:      #FFF8F0;
-      --text:    #3D2B1F;
-      --shadow:  0 6px 0;
+      --coral: #ff7a90;
+      --yellow: #ffd166;
+      --leaf: #22c55e;
+      --sky: #38a7d8;
+      --violet: #9b7cff;
+      --cream: #fff8f0;
+      --ink: #3d2b1f;
+      --shadow-soft: 0 10px 28px rgba(61, 43, 31, 0.12);
+      --button-shadow: 0 6px 0;
     }
 
-    html, body {
+    html,
+    body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: var(--bg);
+      background: var(--cream);
       font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Arial Rounded MT Bold", sans-serif;
-      color: var(--text);
+      color: var(--ink);
     }
 
-    /* ===== SCREEN SYSTEM ===== */
+    body {
+      position: relative;
+    }
+
+    .app-shell {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
     .screen {
-      display: none;
+      position: absolute;
+      inset: 0;
+      display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
+      gap: 18px;
       width: 100%;
       height: 100%;
       padding: 24px 20px 32px;
-      animation: fadeIn 0.35s ease;
-    }
-    .screen.active { display: flex; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(18px) scale(0.985);
+      transition: opacity 0.42s ease, transform 0.42s ease;
     }
 
-    /* ===== HEADER BADGE ===== */
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .screen.leaving {
+      opacity: 0;
+      transform: translateY(-12px) scale(0.985);
+    }
+
     .header-badge {
-      background: var(--purple);
+      background: var(--violet);
       color: #fff;
       font-size: 13px;
-      font-weight: bold;
-      padding: 5px 18px;
-      border-radius: 20px;
+      font-weight: 900;
+      padding: 6px 18px;
+      border-radius: 999px;
       letter-spacing: 1px;
-      box-shadow: 0 3px 0 #9B51E0;
+      box-shadow: 0 3px 0 #7657d7;
+      white-space: nowrap;
     }
 
-    /* ===== SCREEN 1 ===== */
     #screen1 {
-      background: linear-gradient(160deg, #FFF0FB 0%, #FFF8F0 60%, #F0FFF8 100%);
+      background:
+        radial-gradient(circle at 15% 18%, rgba(255, 209, 102, 0.35), transparent 26%),
+        linear-gradient(160deg, #fff0fb 0%, #fff8f0 58%, #ecfff7 100%);
+    }
+
+    #screen2,
+    #screen3 {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 38%),
+        linear-gradient(160deg, #e8f8ff 0%, #fff8f0 100%);
+    }
+
+    #screen4 {
+      background:
+        radial-gradient(circle at 50% 38%, rgba(255, 209, 102, 0.45), transparent 35%),
+        linear-gradient(160deg, #effff6 0%, #fff8f0 100%);
+      text-align: center;
+      padding-top: 14px;
+      padding-bottom: 18px;
+      gap: 10px;
     }
 
     .title-block {
       text-align: center;
-    }
-    .title-block .big-emoji {
-      font-size: 72px;
-      line-height: 1;
-      margin-bottom: 8px;
-      display: block;
-    }
-    .title-block h1 {
-      font-size: 26px;
-      font-weight: 900;
-      color: var(--pink);
-      text-shadow: 0 3px 0 #FFB3C8;
-      line-height: 1.3;
-    }
-    .title-block .subtitle {
-      font-size: 13px;
-      color: #999;
-      margin-top: 6px;
+      display: grid;
+      gap: 8px;
+      justify-items: center;
     }
 
-    .mission-card {
-      background: #fff;
-      border-radius: 24px;
+    .town-illustration {
+      position: relative;
+      width: min(310px, 88vw);
+      height: 138px;
+      display: grid;
+      place-items: end center;
+      filter: drop-shadow(0 10px 0 rgba(255, 122, 144, 0.14));
+      animation: floaty 3s ease-in-out infinite;
+    }
+
+    .mini-shop {
+      position: absolute;
+      bottom: 0;
+      width: 224px;
+      height: 102px;
+      border: 4px solid #5b3b2c;
+      border-radius: 20px 20px 16px 16px;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.72) 0 50%, transparent 50%),
+        linear-gradient(#ffe6a8 0 47%, #ffffff 47% 100%);
+      overflow: hidden;
+    }
+
+    .mini-shop::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 36px;
+      background:
+        repeating-linear-gradient(90deg, #ff738c 0 28px, #fff7fb 28px 56px);
+      border-bottom: 4px solid #5b3b2c;
+    }
+
+    .mini-shop::after {
+      content: "ABC";
+      position: absolute;
+      left: 50%;
+      top: 43px;
+      transform: translateX(-50%);
+      min-width: 86px;
+      padding: 5px 10px;
+      border: 3px solid #5b3b2c;
+      border-radius: 999px;
+      background: #8bdcf5;
+      color: #fff;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 0 #3093bf;
+    }
+
+    .shop-window {
+      position: absolute;
+      bottom: 11px;
+      width: 48px;
+      height: 28px;
+      border: 3px solid #5b3b2c;
+      border-radius: 10px;
+      background: #c6f6ff;
+    }
+
+    .shop-window.left {
+      left: 20px;
+    }
+
+    .shop-window.right {
+      right: 20px;
+    }
+
+    .kid-helper {
+      position: absolute;
+      left: 18px;
+      bottom: 3px;
+      width: 82px;
+      height: 98px;
+      transform: rotate(-4deg);
+    }
+
+    .kid-head {
+      position: absolute;
+      left: 24px;
+      top: 0;
+      width: 42px;
+      height: 42px;
+      border: 4px solid #5b3b2c;
+      border-radius: 50%;
+      background: #ffd5b8;
+      z-index: 2;
+    }
+
+    .kid-head::before,
+    .kid-head::after {
+      content: "";
+      position: absolute;
+      top: 18px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #5b3b2c;
+    }
+
+    .kid-head::before {
+      left: 10px;
+    }
+
+    .kid-head::after {
+      right: 10px;
+    }
+
+    .kid-smile {
+      position: absolute;
+      left: 14px;
+      top: 26px;
+      width: 14px;
+      height: 7px;
+      border-bottom: 3px solid #5b3b2c;
+      border-radius: 0 0 999px 999px;
+      z-index: 3;
+    }
+
+    .kid-body {
+      position: absolute;
+      left: 27px;
+      top: 38px;
+      width: 38px;
+      height: 48px;
+      border: 4px solid #5b3b2c;
+      border-radius: 18px 18px 14px 14px;
+      background: #71d68a;
+      z-index: 1;
+    }
+
+    .kid-bag {
+      position: absolute;
+      left: 5px;
+      top: 42px;
+      width: 34px;
+      height: 39px;
+      border: 4px solid #5b3b2c;
+      border-radius: 12px;
+      background: #ff7a90;
+      z-index: 0;
+    }
+
+    .kid-bag::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: -11px;
+      width: 14px;
+      height: 15px;
+      border: 3px solid #5b3b2c;
+      border-bottom: none;
+      border-radius: 999px 999px 0 0;
+    }
+
+    .sparkle {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      color: #ffbd25;
+      font-size: 22px;
+      animation: twinkle 1.8s ease-in-out infinite;
+    }
+
+    .sparkle.one {
+      right: 14px;
+      top: 8px;
+    }
+
+    .sparkle.two {
+      left: 4px;
+      top: 22px;
+      animation-delay: 0.45s;
+    }
+
+    .title-block h1 {
+      font-size: 27px;
+      font-weight: 900;
+      color: var(--coral);
+      text-shadow: 0 3px 0 #ffc2ce;
+      line-height: 1.25;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #777;
+      font-weight: 700;
+    }
+
+    .mission-card,
+    .receipt-card {
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 18px;
       padding: 22px 24px;
       width: 100%;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+      box-shadow: var(--shadow-soft);
       text-align: center;
     }
-    .mission-card .mission-label {
+
+    .mission-label,
+    .receipt-title {
       font-size: 12px;
-      font-weight: bold;
-      color: var(--purple);
-      background: #F3E8FF;
+      font-weight: 900;
       display: inline-block;
-      padding: 3px 12px;
-      border-radius: 20px;
+      padding: 4px 12px;
+      border-radius: 999px;
       margin-bottom: 14px;
       letter-spacing: 1px;
     }
-    .mission-card .mission-text {
+
+    .mission-label {
+      color: #7b55d9;
+      background: #f1e9ff;
+    }
+
+    .mission-text {
       font-size: 20px;
       font-weight: 900;
       line-height: 1.6;
-      color: var(--text);
-    }
-    .mission-card .mission-text .highlight {
-      color: var(--pink);
-      font-size: 26px;
-    }
-    .mission-card .mission-text .num-highlight {
-      color: var(--mint);
-      font-size: 26px;
     }
 
-    /* ===== BUTTONS ===== */
-    .btn-primary {
+    .mission-story {
+      margin-top: 12px;
+      color: #8a6a55;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .highlight {
+      color: var(--coral);
+      font-size: 27px;
+    }
+
+    .num-highlight {
+      color: var(--leaf);
+      font-size: 27px;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .btn-primary,
+    .btn-retry {
       width: 100%;
-      padding: 20px;
+      min-height: 66px;
+      padding: 18px;
       border: none;
       border-radius: 20px;
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 900;
       color: #fff;
-      background: linear-gradient(135deg, var(--pink), #FF6B9D);
-      box-shadow: var(--shadow) #C94D80;
       cursor: pointer;
-      letter-spacing: 2px;
-      transition: transform 0.1s, box-shadow 0.1s;
+      letter-spacing: 1px;
+      transition: transform 0.12s, box-shadow 0.12s, filter 0.2s;
     }
-    .btn-primary:active {
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--coral), #ff5d91);
+      box-shadow: var(--button-shadow) #c94373;
+    }
+
+    .btn-retry {
+      background: linear-gradient(135deg, var(--leaf), #08b981);
+      box-shadow: var(--button-shadow) #07865f;
+    }
+
+    .btn-primary:active,
+    .btn-retry:active {
       transform: translateY(4px);
-      box-shadow: 0 2px 0 #C94D80;
+      box-shadow: 0 2px 0 rgba(61, 43, 31, 0.32);
     }
 
-    /* ===== SHOP SCREEN SHARED ===== */
-    #screen2, #screen3 {
-      background: linear-gradient(160deg, #E8F8FF 0%, #FFF8F0 100%);
-    }
-
-    /* ===== SHOPKEEPER ===== */
     .shopkeeper-area {
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
+
     .shop-title {
       font-size: 13px;
-      font-weight: bold;
+      font-weight: 900;
       color: var(--sky);
-      background: #E0F4FF;
-      padding: 4px 14px;
-      border-radius: 20px;
+      background: #e0f4ff;
+      padding: 5px 14px;
+      border-radius: 999px;
       letter-spacing: 1px;
     }
+
     .keeper-row {
       display: flex;
       align-items: flex-end;
       gap: 12px;
     }
-    .keeper-emoji {
-      font-size: 68px;
-      line-height: 1;
+
+    .bunny-keeper {
+      position: relative;
+      width: 82px;
+      height: 92px;
+      animation: nod 2.2s ease-in-out infinite;
+      transform-origin: center bottom;
     }
+
+    .bunny-ear {
+      position: absolute;
+      top: 0;
+      width: 23px;
+      height: 46px;
+      border: 4px solid #5b3b2c;
+      border-radius: 999px;
+      background: #fff;
+      z-index: 0;
+    }
+
+    .bunny-ear::after {
+      content: "";
+      position: absolute;
+      inset: 9px 5px;
+      border-radius: 999px;
+      background: #ffc0ce;
+    }
+
+    .bunny-ear.left {
+      left: 15px;
+      transform: rotate(-16deg);
+    }
+
+    .bunny-ear.right {
+      right: 15px;
+      transform: rotate(16deg);
+    }
+
+    .bunny-face {
+      position: absolute;
+      left: 8px;
+      bottom: 9px;
+      width: 66px;
+      height: 62px;
+      border: 4px solid #5b3b2c;
+      border-radius: 50%;
+      background: #fff;
+      z-index: 1;
+    }
+
+    .bunny-face::before,
+    .bunny-face::after {
+      content: "";
+      position: absolute;
+      top: 24px;
+      width: 7px;
+      height: 8px;
+      border-radius: 50%;
+      background: #5b3b2c;
+    }
+
+    .bunny-face::before {
+      left: 17px;
+    }
+
+    .bunny-face::after {
+      right: 17px;
+    }
+
+    .bunny-cheek {
+      position: absolute;
+      top: 34px;
+      width: 11px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ffbcc9;
+      z-index: 3;
+    }
+
+    .bunny-cheek.left {
+      left: 12px;
+    }
+
+    .bunny-cheek.right {
+      right: 12px;
+    }
+
+    .bunny-mouth {
+      position: absolute;
+      left: 30px;
+      top: 33px;
+      width: 8px;
+      height: 8px;
+      border-right: 3px solid #5b3b2c;
+      border-bottom: 3px solid #5b3b2c;
+      border-radius: 0 0 999px 0;
+      transform: rotate(45deg);
+      z-index: 3;
+    }
+
+    .bunny-apron {
+      position: absolute;
+      left: 19px;
+      bottom: 0;
+      width: 45px;
+      height: 28px;
+      border: 4px solid #5b3b2c;
+      border-radius: 12px 12px 14px 14px;
+      background: #8bdcf5;
+      z-index: 2;
+    }
+
+    .bunny-apron::after {
+      content: "A";
+      position: absolute;
+      inset: 2px 0 auto;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 900;
+      text-align: center;
+      text-shadow: 0 2px 0 #3093bf;
+    }
+
     .speech-bubble {
       position: relative;
       background: #fff;
       border-radius: 18px;
-      padding: 14px 20px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
-      max-width: 200px;
+      padding: 14px 18px;
+      box-shadow: var(--shadow-soft);
+      max-width: 210px;
     }
+
     .speech-bubble::before {
       content: "";
       position: absolute;
@@ -191,343 +555,1153 @@
       border: 8px solid transparent;
       border-right-color: #fff;
     }
-    .speech-bubble .en-text {
+
+    .en-text {
       font-size: 20px;
       font-weight: 900;
       color: var(--sky);
-    }
-    .speech-bubble .ja-text {
-      font-size: 11px;
-      color: #aaa;
-      margin-top: 2px;
+      line-height: 1.2;
     }
 
-    /* ===== FEEDBACK ===== */
+    .ja-text {
+      font-size: 11px;
+      color: #888;
+      margin-top: 4px;
+      font-weight: 700;
+    }
+
     .feedback {
-      min-height: 36px;
+      min-height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
+
     .feedback-msg {
       font-size: 15px;
-      font-weight: bold;
-      padding: 6px 18px;
-      border-radius: 20px;
+      font-weight: 900;
+      padding: 7px 18px;
+      border-radius: 999px;
       opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .feedback-msg.wrong {
-      background: #FFE8E8;
-      color: #E05C5C;
-      opacity: 1;
+      transform: translateY(8px);
+      transition: opacity 0.24s, transform 0.24s;
     }
 
-    /* ===== ITEM GRID ===== */
-    .item-grid {
+    .feedback-msg.wrong {
+      background: #ffe8e8;
+      color: #df4a5c;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .item-grid,
+    .number-grid {
       width: 100%;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
       gap: 12px;
     }
-    .item-btn {
+
+    .item-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .number-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .item-btn,
+    .num-btn {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 16px 8px;
+      min-width: 0;
       border: 3px solid transparent;
-      border-radius: 20px;
       background: #fff;
-      box-shadow: 0 5px 0 #DDD;
       cursor: pointer;
-      transition: transform 0.1s, box-shadow 0.1s;
+      transition: transform 0.12s, box-shadow 0.12s, border-color 0.2s;
     }
-    .item-btn:active {
-      transform: translateY(4px);
-      box-shadow: 0 1px 0 #DDD;
-    }
-    .item-btn .item-emoji { font-size: 42px; line-height: 1; }
-    .item-btn .item-en   { font-size: 15px; font-weight: 900; color: var(--text); }
 
-    /* ===== NUMBER GRID ===== */
-    .number-grid {
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
+    .item-btn {
+      min-height: 116px;
+      padding: 16px 6px;
+      border-radius: 20px;
     }
+
     .num-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 14px 4px;
-      border: none;
+      min-height: 88px;
+      padding: 13px 3px;
       border-radius: 18px;
-      background: #fff;
-      box-shadow: 0 5px 0 #DDD;
-      cursor: pointer;
-      transition: transform 0.1s, box-shadow 0.1s;
     }
+
+    .item-btn:active,
     .num-btn:active {
       transform: translateY(4px);
-      box-shadow: 0 1px 0 #DDD;
+      box-shadow: 0 1px 0 #ddd !important;
     }
-    .num-btn .num-digit { font-size: 30px; font-weight: 900; color: var(--text); }
-    .num-btn .num-word  { font-size: 10px; font-weight: bold; color: #AAA; }
 
-    /* ===== SCREEN 4 (SUCCESS) ===== */
-    #screen4 {
-      background: linear-gradient(160deg, #F0FFF8 0%, #FFF8F0 100%);
-      text-align: center;
+    .item-emoji {
+      font-size: 43px;
+      line-height: 1;
     }
+
+    .item-en {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    .num-digit {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    .num-word {
+      font-size: 10px;
+      font-weight: 900;
+      color: #888;
+    }
+
+    .is-correct {
+      border-color: var(--yellow);
+      animation: bounceCorrect 0.58s cubic-bezier(0.25, 1.35, 0.5, 1) both;
+    }
+
+    .is-correct::after {
+      content: "";
+      position: absolute;
+      inset: -45%;
+      z-index: -1;
+      background:
+        radial-gradient(circle, rgba(255, 255, 255, 0.98) 0 9%, transparent 10%),
+        radial-gradient(circle, rgba(255, 209, 102, 0.9) 0 8%, transparent 9%),
+        radial-gradient(circle, rgba(255, 122, 144, 0.75) 0 7%, transparent 8%);
+      background-size: 34px 34px, 46px 46px, 56px 56px;
+      animation: sparkleBurst 0.62s ease-out both;
+    }
+
+    .is-wrong {
+      animation: shakeWrong 0.38s ease-in-out both;
+    }
+
     .success-area {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
     }
-    .success-area .big-star {
-      font-size: 80px;
-      animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+    .celebration-illustration {
+      position: relative;
+      width: 126px;
+      height: 92px;
+      animation: popIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both, spinGlow 2.8s ease-in-out infinite 0.8s;
     }
-    @keyframes popIn {
-      from { transform: scale(0); opacity: 0; }
-      to   { transform: scale(1); opacity: 1; }
+
+    .prize-star {
+      position: absolute;
+      left: 50%;
+      top: 6px;
+      width: 82px;
+      height: 82px;
+      transform: translateX(-50%);
+      background: #ffd84d;
+      clip-path: polygon(50% 0, 62% 34%, 98% 35%, 69% 56%, 79% 91%, 50% 70%, 21% 91%, 31% 56%, 2% 35%, 38% 34%);
+      filter: drop-shadow(0 6px 0 #e9a811);
     }
+
+    .prize-face {
+      position: absolute;
+      left: 50%;
+      top: 33px;
+      width: 44px;
+      height: 26px;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    .prize-face::before,
+    .prize-face::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      width: 7px;
+      height: 9px;
+      border-radius: 50%;
+      background: #5b3b2c;
+    }
+
+    .prize-face::before {
+      left: 7px;
+    }
+
+    .prize-face::after {
+      right: 7px;
+    }
+
+    .prize-smile {
+      position: absolute;
+      left: 15px;
+      top: 14px;
+      width: 14px;
+      height: 8px;
+      border-bottom: 3px solid #5b3b2c;
+      border-radius: 0 0 999px 999px;
+    }
+
+    .ribbon {
+      position: absolute;
+      bottom: 0;
+      width: 28px;
+      height: 38px;
+      border-radius: 6px 6px 12px 12px;
+      background: #ff7a90;
+      border: 3px solid #5b3b2c;
+      z-index: -1;
+    }
+
+    .ribbon.left {
+      left: 38px;
+      transform: rotate(13deg);
+    }
+
+    .ribbon.right {
+      right: 38px;
+      transform: rotate(-13deg);
+      background: #8bdcf5;
+    }
+
     .success-area h2 {
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 900;
-      color: var(--mint);
-      text-shadow: 0 4px 0 #03B888;
+      color: var(--leaf);
+      text-shadow: 0 4px 0 #b8f3cf;
+      line-height: 1.18;
     }
-    .success-area .success-sub {
-      font-size: 16px;
+
+    .success-sub {
+      font-size: 15px;
       color: #666;
+      font-weight: 900;
+    }
+
+    .journey-card {
+      position: relative;
+      min-height: 170px;
+      border: 3px dashed #ffd166;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow-soft);
+      width: 100%;
+      padding: 12px 10px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 8px;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .journey-title {
+      color: #d89100;
+      background: #fff1bc;
+      margin-bottom: 4px;
+      font-size: 12px;
+      font-weight: 900;
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      letter-spacing: 1px;
+    }
+
+    .journey-message {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--coral);
+      line-height: 1.25;
+    }
+
+    .sugoroku-board {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 4px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .map-square {
+      position: relative;
+      z-index: 1;
+      min-height: 32px;
+      border: 2px solid #ead4a5;
+      border-radius: 10px;
+      background: #fff9e6;
+      display: grid;
+      place-items: center;
+      gap: 0;
+      padding: 3px 2px;
+    }
+
+    .map-square.reached {
+      border-color: #7bdca0;
+      background: #eafff0;
+    }
+
+    .map-square.current {
+      border-color: var(--coral);
+      background: #fff0f4;
+      box-shadow: 0 0 0 3px rgba(255, 122, 144, 0.16);
+      animation: boardPop 0.72s cubic-bezier(0.2, 1.5, 0.32, 1) 0.25s both;
+    }
+
+    .map-square.castle {
+      border-color: #bda6ff;
+      background: #f5f0ff;
+    }
+
+    .map-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .map-label {
+      font-size: 8px;
+      font-weight: 900;
+      color: #8a6a55;
+      white-space: nowrap;
+    }
+
+    .player-piece {
+      position: absolute;
+      left: 50%;
+      top: -18px;
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border: 3px solid #5b3b2c;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 4px 0 rgba(91, 59, 44, 0.18);
+      transform: translateX(-50%);
+      font-size: 14px;
+      animation: pieceHop 0.8s cubic-bezier(0.2, 1.6, 0.3, 1) both;
+    }
+
+    .arrival-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 26px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: #f1e9ff;
+      color: #7b55d9;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .stamp-mark {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border: 4px solid #f24860;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.72);
+      color: #f24860;
+      font-size: 24px;
+      transform: scale(2.4) rotate(-16deg);
+      opacity: 0;
+    }
+
+    .screen.active .stamp-mark {
+      animation: stampDown 0.85s cubic-bezier(0.2, 1.5, 0.32, 1) 0.45s both;
+    }
+
+    .screen.active .journey-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255, 122, 144, 0.95) 0 5px, transparent 6px),
+        radial-gradient(circle at 82% 26%, rgba(34, 197, 94, 0.9) 0 5px, transparent 6px),
+        radial-gradient(circle at 74% 78%, rgba(56, 167, 216, 0.9) 0 5px, transparent 6px),
+        radial-gradient(circle at 28% 82%, rgba(255, 209, 102, 1) 0 5px, transparent 6px);
+      opacity: 0;
+      animation: confettiFlash 0.8s ease-out 0.78s both;
+      pointer-events: none;
     }
 
     .receipt-card {
-      background: #fff;
-      border-radius: 20px;
-      padding: 20px 28px;
-      width: 100%;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+      padding: 14px 24px;
     }
-    .receipt-card .receipt-title {
-      font-size: 12px;
-      font-weight: bold;
-      color: var(--mint);
-      letter-spacing: 2px;
-      margin-bottom: 12px;
+
+    .receipt-title {
+      color: var(--leaf);
+      background: #dcffe9;
     }
+
     .receipt-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px dashed #EEE;
+      gap: 12px;
+      padding: 7px 0;
+      border-bottom: 1px dashed #ece2d6;
     }
-    .receipt-row:last-child { border-bottom: none; }
-    .receipt-row .r-label { font-size: 14px; color: #888; }
-    .receipt-row .r-value { font-size: 16px; font-weight: 900; color: var(--text); }
 
-    .btn-retry {
-      width: 100%;
-      padding: 18px;
-      border: none;
-      border-radius: 20px;
-      font-size: 18px;
-      font-weight: 900;
-      color: #fff;
-      background: linear-gradient(135deg, var(--mint), #04C58E);
-      box-shadow: var(--shadow) #039E72;
-      cursor: pointer;
-      letter-spacing: 1px;
-      transition: transform 0.1s, box-shadow 0.1s;
+    .receipt-row:last-child {
+      border-bottom: none;
     }
-    .btn-retry:active {
-      transform: translateY(4px);
-      box-shadow: 0 2px 0 #039E72;
+
+    .r-label {
+      font-size: 14px;
+      color: #777;
+      font-weight: 800;
+    }
+
+    .r-value {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--ink);
+      text-align: right;
+    }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.58; transform: scale(0.82) rotate(0); }
+      50% { opacity: 1; transform: scale(1.15) rotate(18deg); }
+    }
+
+    @keyframes nod {
+      0%, 100% { transform: rotate(0); }
+      50% { transform: rotate(4deg); }
+    }
+
+    @keyframes bounceCorrect {
+      0% { transform: translateY(0) scale(1); }
+      35% { transform: translateY(-18px) scale(1.08); }
+      62% { transform: translateY(4px) scale(0.98); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    @keyframes sparkleBurst {
+      0% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+      35% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.15) rotate(22deg); }
+    }
+
+    @keyframes shakeWrong {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-10px); }
+      40% { transform: translateX(9px); }
+      60% { transform: translateX(-7px); }
+      80% { transform: translateX(5px); }
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes spinGlow {
+      0%, 100% { filter: drop-shadow(0 0 0 rgba(255, 209, 102, 0)); transform: rotate(0); }
+      50% { filter: drop-shadow(0 0 18px rgba(255, 209, 102, 0.85)); transform: rotate(7deg); }
+    }
+
+    @keyframes stampDown {
+      0% { opacity: 0; transform: scale(2.4) rotate(-16deg); }
+      56% { opacity: 1; transform: scale(0.84) rotate(-10deg); }
+      72% { transform: scale(1.12) rotate(-10deg); }
+      100% { opacity: 1; transform: scale(1) rotate(-10deg); }
+    }
+
+    @keyframes confettiFlash {
+      0% { opacity: 0; transform: scale(0.6); }
+      40% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.2); }
+    }
+
+    @keyframes pieceHop {
+      0% { opacity: 0; transform: translate(-50%, -26px) scale(0.75); }
+      55% { opacity: 1; transform: translate(-50%, 5px) scale(1.08); }
+      100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    }
+
+    @keyframes boardPop {
+      0% { transform: scale(0.82); }
+      70% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 360px) {
+      .screen {
+        padding: 18px 14px 24px;
+        gap: 12px;
+      }
+
+      .title-block h1,
+      .success-area h2 {
+        font-size: 25px;
+      }
+
+      .town-illustration {
+        width: min(278px, 92vw);
+        height: 120px;
+      }
+
+      .mini-shop {
+        width: 198px;
+        height: 90px;
+      }
+
+      .kid-helper {
+        left: 8px;
+        transform: scale(0.86) rotate(-4deg);
+        transform-origin: bottom left;
+      }
+
+      .bunny-keeper {
+        width: 72px;
+        height: 84px;
+        transform: scale(0.9);
+      }
+
+      .mission-card,
+      .receipt-card {
+        padding: 18px 16px;
+      }
+
+      .item-grid {
+        gap: 8px;
+      }
+
+      .item-btn {
+        min-height: 106px;
+      }
+
+      .item-emoji {
+        font-size: 38px;
+      }
+
+      .item-en {
+        font-size: 13px;
+      }
+
+      .number-grid {
+        gap: 7px;
+      }
+
+      .num-btn {
+        min-height: 78px;
+      }
+
+      .num-digit {
+        font-size: 26px;
+      }
+
+      .journey-card {
+        min-height: 158px;
+        padding: 10px 8px;
+      }
+
+      .sugoroku-board {
+        gap: 3px;
+      }
+
+      .map-square {
+        min-height: 29px;
+        border-radius: 8px;
+      }
+
+      .map-icon {
+        font-size: 14px;
+      }
+
+      .map-label {
+        font-size: 7px;
+      }
+
+      .celebration-illustration {
+        height: 82px;
+        transform: scale(0.92);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
+  <main class="app-shell" aria-live="polite">
+    <section id="screen1" class="screen active">
+      <div class="header-badge" data-app-name>🏪 えいごおつかいタウン</div>
 
-<!-- ===== SCREEN 1: おつかいメモ ===== -->
-<div id="screen1" class="screen active">
-
-  <div class="header-badge">🏪 えいご商店街</div>
-
-  <div class="title-block">
-    <span class="big-emoji">🎒</span>
-    <h1>はじめての<br>おつかい！</h1>
-    <p class="subtitle">えいごでお買い物しよう</p>
-  </div>
-
-  <div class="mission-card">
-    <div class="mission-label">📋 おつかいメモ</div>
-    <div class="mission-text">
-      <span class="highlight">Apple 🍎</span> を<br>
-      <span class="num-highlight">3つ</span> 買ってきてね！
-    </div>
-  </div>
-
-  <button class="btn-primary" onclick="goTo('screen2')">
-    🛒 おみせにいく
-  </button>
-
-</div>
-
-<!-- ===== SCREEN 2: アイテム選択 ===== -->
-<div id="screen2" class="screen">
-
-  <div class="header-badge">🏪 えいご商店街</div>
-
-  <div class="shopkeeper-area">
-    <div class="shop-title">🍓 フルーツやさん</div>
-    <div class="keeper-row">
-      <div class="keeper-emoji">🐰</div>
-      <div class="speech-bubble">
-        <div class="en-text">Hello!<br>What do you want?</div>
-        <div class="ja-text">なにがほしいですか？</div>
+      <div class="title-block">
+        <div class="town-illustration" aria-hidden="true">
+          <div class="mini-shop">
+            <div class="shop-window left"></div>
+            <div class="shop-window right"></div>
+          </div>
+          <div class="kid-helper">
+            <div class="kid-bag"></div>
+            <div class="kid-body"></div>
+            <div class="kid-head"></div>
+            <div class="kid-smile"></div>
+          </div>
+          <div class="sparkle one">✦</div>
+          <div class="sparkle two">✦</div>
+        </div>
+        <h1>はじめての<br>おつかい！</h1>
+        <p class="subtitle">えいごでお買い物しよう</p>
       </div>
-    </div>
-  </div>
 
-  <div class="feedback" id="feedback2">
-    <div class="feedback-msg" id="feedback2-msg">😅 Oops! 違うよ、もう一度！</div>
-  </div>
-
-  <div class="item-grid">
-    <button class="item-btn" onclick="checkItem('Apple')" style="box-shadow:0 5px 0 #FFB3A0;">
-      <span class="item-emoji">🍎</span>
-      <span class="item-en">Apple</span>
-    </button>
-    <button class="item-btn" onclick="checkItem('Banana')" style="box-shadow:0 5px 0 #FFE08A;">
-      <span class="item-emoji">🍌</span>
-      <span class="item-en">Banana</span>
-    </button>
-    <button class="item-btn" onclick="checkItem('Grape')" style="box-shadow:0 5px 0 #C9A8FF;">
-      <span class="item-emoji">🍇</span>
-      <span class="item-en">Grape</span>
-    </button>
-  </div>
-
-</div>
-
-<!-- ===== SCREEN 3: 個数選択 ===== -->
-<div id="screen3" class="screen">
-
-  <div class="header-badge">🏪 えいご商店街</div>
-
-  <div class="shopkeeper-area">
-    <div class="shop-title">🍓 フルーツやさん</div>
-    <div class="keeper-row">
-      <div class="keeper-emoji">🐰</div>
-      <div class="speech-bubble">
-        <div class="en-text">How many?</div>
-        <div class="ja-text">いくつほしいですか？</div>
+      <div class="mission-card">
+        <div class="mission-label">📋 おつかいメモ</div>
+        <div class="mission-text" id="missionText"></div>
+        <div class="mission-story" id="missionStory"></div>
       </div>
-    </div>
-  </div>
 
-  <div class="feedback" id="feedback3">
-    <div class="feedback-msg" id="feedback3-msg">😅 Oops! 違うよ、もう一度！</div>
-  </div>
+      <button class="btn-primary" type="button" onclick="startShopping()">
+        🛒 おみせにいく
+      </button>
+    </section>
 
-  <div class="number-grid">
-    <button class="num-btn" onclick="checkNum(1)" style="box-shadow:0 5px 0 #A8D8FF;">
-      <span class="num-digit">1</span>
-      <span class="num-word">one</span>
-    </button>
-    <button class="num-btn" onclick="checkNum(2)" style="box-shadow:0 5px 0 #FFD6A8;">
-      <span class="num-digit">2</span>
-      <span class="num-word">two</span>
-    </button>
-    <button class="num-btn" onclick="checkNum(3)" style="box-shadow:0 5px 0 #A8F0D8;">
-      <span class="num-digit">3</span>
-      <span class="num-word">three</span>
-    </button>
-    <button class="num-btn" onclick="checkNum(4)" style="box-shadow:0 5px 0 #FFA8C8;">
-      <span class="num-digit">4</span>
-      <span class="num-word">four</span>
-    </button>
-    <button class="num-btn" onclick="checkNum(5)" style="box-shadow:0 5px 0 #D8A8FF;">
-      <span class="num-digit">5</span>
-      <span class="num-word">five</span>
-    </button>
-  </div>
+    <section id="screen2" class="screen">
+      <div class="header-badge" data-app-name>🏪 えいごおつかいタウン</div>
 
-</div>
+      <div class="shopkeeper-area">
+        <div class="shop-title">🍓 フルーツやさん</div>
+        <div class="keeper-row">
+          <div class="bunny-keeper" aria-hidden="true">
+            <div class="bunny-ear left"></div>
+            <div class="bunny-ear right"></div>
+            <div class="bunny-face">
+              <div class="bunny-cheek left"></div>
+              <div class="bunny-cheek right"></div>
+              <div class="bunny-mouth"></div>
+            </div>
+            <div class="bunny-apron"></div>
+          </div>
+          <div class="speech-bubble">
+            <div class="en-text">Hello!<br>What do you want?</div>
+            <div class="ja-text">なにがほしいですか？</div>
+          </div>
+        </div>
+      </div>
 
-<!-- ===== SCREEN 4: 成功！ ===== -->
-<div id="screen4" class="screen">
+      <div class="feedback">
+        <div class="feedback-msg" id="feedback2-msg">😅 Oops! 違うよ、もう一度！</div>
+      </div>
 
-  <div class="header-badge">🏪 えいご商店街</div>
+      <div class="item-grid" id="itemGrid"></div>
+    </section>
 
-  <div class="success-area">
-    <div class="big-star">🌟</div>
-    <h2>できたよ！<br>えらい！</h2>
-    <p class="success-sub">おつかいせいこう！🎉</p>
-  </div>
+    <section id="screen3" class="screen">
+      <div class="header-badge" data-app-name>🏪 えいごおつかいタウン</div>
 
-  <div class="receipt-card">
-    <div class="receipt-title">🧾 おかいものメモ</div>
-    <div class="receipt-row">
-      <span class="r-label">えいご</span>
-      <span class="r-value">Apple 🍎</span>
-    </div>
-    <div class="receipt-row">
-      <span class="r-label">かず</span>
-      <span class="r-value">3 (three)</span>
-    </div>
-    <div class="receipt-row">
-      <span class="r-label">つかえたことば</span>
-      <span class="r-value">2 words ⭐️</span>
-    </div>
-  </div>
+      <div class="shopkeeper-area">
+        <div class="shop-title">🍓 フルーツやさん</div>
+        <div class="keeper-row">
+          <div class="bunny-keeper" aria-hidden="true">
+            <div class="bunny-ear left"></div>
+            <div class="bunny-ear right"></div>
+            <div class="bunny-face">
+              <div class="bunny-cheek left"></div>
+              <div class="bunny-cheek right"></div>
+              <div class="bunny-mouth"></div>
+            </div>
+            <div class="bunny-apron"></div>
+          </div>
+          <div class="speech-bubble">
+            <div class="en-text">How many?</div>
+            <div class="ja-text">いくつほしいですか？</div>
+          </div>
+        </div>
+      </div>
 
-  <button class="btn-retry" onclick="restart()">
-    🔄 もういちど あそぶ
-  </button>
+      <div class="feedback">
+        <div class="feedback-msg" id="feedback3-msg">😅 Oops! 違うよ、もう一度！</div>
+      </div>
 
-</div>
+      <div class="number-grid" id="numberGrid"></div>
+    </section>
 
-<script>
-  function goTo(screenId) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(screenId).classList.add('active');
-  }
+    <section id="screen4" class="screen">
+      <div class="header-badge" data-app-name>🏪 えいごおつかいタウン</div>
 
-  function showFeedback(id) {
-    const msg = document.getElementById(id + '-msg');
-    msg.classList.add('wrong');
-    clearTimeout(msg._timer);
-    msg._timer = setTimeout(() => msg.classList.remove('wrong'), 1800);
-  }
+      <div class="success-area">
+        <div class="celebration-illustration" aria-hidden="true">
+          <div class="ribbon left"></div>
+          <div class="ribbon right"></div>
+          <div class="prize-star"></div>
+          <div class="prize-face">
+            <div class="prize-smile"></div>
+          </div>
+        </div>
+        <h2 id="successTitle">クリア<br>おめでとう！</h2>
+        <p class="success-sub" id="successSub">Thank you! おつかいせいこう！</p>
+      </div>
 
-  function checkItem(name) {
-    if (name === 'Apple') {
-      goTo('screen3');
-    } else {
-      showFeedback('feedback2');
+      <div class="journey-card">
+        <div>
+          <div class="journey-title">🏰 おしろへのすごろく</div>
+          <div class="journey-message" id="journeyMessage"></div>
+        </div>
+        <div class="sugoroku-board" id="sugorokuBoard" aria-label="おしろへのすごろく"></div>
+        <div class="arrival-badge" id="arrivalBadge"></div>
+        <div class="stamp-mark">💮</div>
+      </div>
+
+      <div class="receipt-card">
+        <div class="receipt-title">🧾 おかいものメモ</div>
+        <div class="receipt-row">
+          <span class="r-label">えいご</span>
+          <span class="r-value" id="receiptItem"></span>
+        </div>
+        <div class="receipt-row">
+          <span class="r-label">かず</span>
+          <span class="r-value" id="receiptCount"></span>
+        </div>
+        <div class="receipt-row">
+          <span class="r-label">つかえたことば</span>
+          <span class="r-value">2 words ⭐</span>
+        </div>
+      </div>
+
+      <button class="btn-retry" id="adventureButton" type="button" onclick="nextAdventureStep()">
+        ➡️ つぎのおつかいへ
+      </button>
+    </section>
+  </main>
+
+  <script>
+    const appName = "えいごおつかいタウン";
+
+    const countOptions = [
+      { value: 1, word: "one", shadow: "#a8d8ff" },
+      { value: 2, word: "two", shadow: "#ffd6a8" },
+      { value: 3, word: "three", shadow: "#a8f0d8" },
+      { value: 4, word: "four", shadow: "#ffa8c8" },
+      { value: 5, word: "five", shadow: "#d8a8ff" }
+    ];
+
+    const shopTemplates = [
+      {
+        shop: "フルーツやさん",
+        shopIcon: "🍓",
+        items: [
+          { name: "Apple", plural: "apples", emoji: "🍎", shadow: "#ffb3a0" },
+          { name: "Banana", plural: "bananas", emoji: "🍌", shadow: "#ffe08a" },
+          { name: "Grape", plural: "grapes", emoji: "🍇", shadow: "#c9a8ff" }
+        ]
+      },
+      {
+        shop: "パンやさん",
+        shopIcon: "🥐",
+        items: [
+          { name: "Bread", plural: "pieces of bread", emoji: "🍞", shadow: "#e8c48f" },
+          { name: "Donut", plural: "donuts", emoji: "🍩", shadow: "#ffb8d1" },
+          { name: "Cookie", plural: "cookies", emoji: "🍪", shadow: "#d9aa73" }
+        ]
+      },
+      {
+        shop: "ぶんぼうぐやさん",
+        shopIcon: "✏️",
+        items: [
+          { name: "Pencil", plural: "pencils", emoji: "✏️", shadow: "#ffd166" },
+          { name: "Book", plural: "books", emoji: "📘", shadow: "#9bd2ff" },
+          { name: "Eraser", plural: "erasers", emoji: "🧽", shadow: "#ffc0ce" }
+        ]
+      },
+      {
+        shop: "おもちゃやさん",
+        shopIcon: "🧸",
+        items: [
+          { name: "Ball", plural: "balls", emoji: "⚽", shadow: "#b6e3ff" },
+          { name: "Car", plural: "cars", emoji: "🚗", shadow: "#ff9aa2" },
+          { name: "Doll", plural: "dolls", emoji: "🪆", shadow: "#c9a8ff" }
+        ]
+      },
+      {
+        shop: "どうぶつショップ",
+        shopIcon: "🐾",
+        items: [
+          { name: "Cat", plural: "cats", emoji: "🐱", shadow: "#ffd6a8" },
+          { name: "Dog", plural: "dogs", emoji: "🐶", shadow: "#c8e6c9" },
+          { name: "Bird", plural: "birds", emoji: "🐦", shadow: "#a8d8ff" }
+        ]
+      }
+    ];
+
+    const journeyPath = Array.from({ length: 30 }, (_, index) => {
+      const specialSpots = {
+        0: { label: "1", icon: "🏠" },
+        4: { label: "5", icon: "🌷" },
+        9: { label: "10", icon: "🍭" },
+        14: { label: "15", icon: "🌈" },
+        19: { label: "20", icon: "🎪" },
+        24: { label: "25", icon: "⭐" },
+        29: { label: "30", icon: "🏰", castle: true }
+      };
+
+      return specialSpots[index] || {
+        label: String(index + 1),
+        icon: "•"
+      };
+    });
+
+    const adventureLevels = Array.from({ length: journeyPath.length - 1 }, (_, index) => {
+      const template = shopTemplates[index % shopTemplates.length];
+      const targetItem = template.items[Math.floor(index / shopTemplates.length) % template.items.length];
+      const countCycle = [3, 2, 5, 1, 4];
+
+      return {
+        id: index + 1,
+        shop: template.shop,
+        shopIcon: template.shopIcon,
+        missionItem: targetItem.name,
+        missionCount: countCycle[index % countCycle.length],
+        itemOptions: template.items,
+        countOptions
+      };
+    });
+
+    let currentLevelIndex = 0;
+    let journeyPosition = 0;
+    let speechReady = false;
+    let voices = [];
+    let isChangingScreen = false;
+
+    const phrases = {
+      greeting: "Hello! What do you want?",
+      quantity: "How many?",
+      thanks: "Thank you!"
+    };
+
+    const voiceProfiles = {
+      narrator: { rate: 0.88, pitch: 0.98, voiceOffset: 0 },
+      shopkeeper: { rate: 0.92, pitch: 1.04, voiceOffset: 1 },
+      learner: { rate: 0.86, pitch: 1.0, voiceOffset: 0 }
+    };
+
+    function getCurrentLevel() {
+      return adventureLevels[currentLevelIndex];
     }
-  }
 
-  function checkNum(n) {
-    if (n === 3) {
-      goTo('screen4');
-    } else {
-      showFeedback('feedback3');
+    function getCountWord(level, value) {
+      const found = level.countOptions.find(option => option.value === value);
+      return found ? found.word : String(value);
     }
-  }
 
-  function restart() {
-    goTo('screen1');
-  }
-</script>
+    function numberToWord(value) {
+      return getCountWord(getCurrentLevel(), value);
+    }
+
+    function getMissionSpeech(level) {
+      const item = level.itemOptions.find(option => option.name === level.missionItem);
+      const itemName = level.missionCount === 1 ? item.name.toLowerCase() : item.plural;
+      return `Please buy ${getCountWord(level, level.missionCount)} ${itemName}.`;
+    }
+
+    function renderLevel() {
+      const level = getCurrentLevel();
+      const correctItem = level.itemOptions.find(item => item.name === level.missionItem);
+
+      document.title = appName;
+      document.querySelectorAll("[data-app-name]").forEach(el => {
+        el.textContent = "🏪 " + appName;
+      });
+
+      document.querySelectorAll(".shop-title").forEach(el => {
+        el.textContent = `${level.shopIcon} ${level.shop}`;
+      });
+
+      document.getElementById("missionText").innerHTML = `
+        <span class="highlight">${level.missionItem} ${correctItem.emoji}</span> を<br>
+        <span class="num-highlight">${level.missionCount}つ</span> 買ってきてね！
+      `;
+      document.getElementById("missionStory").textContent = `30マスすごろく：おしろまで あと${journeyPath.length - 1 - journeyPosition}マス！`;
+
+      document.getElementById("itemGrid").innerHTML = level.itemOptions.map(item => `
+        <button class="item-btn" type="button" data-item="${item.name}" style="box-shadow:0 5px 0 ${item.shadow};">
+          <span class="item-emoji">${item.emoji}</span>
+          <span class="item-en">${item.name}</span>
+        </button>
+      `).join("");
+
+      document.getElementById("numberGrid").innerHTML = level.countOptions.map(option => `
+        <button class="num-btn" type="button" data-count="${option.value}" style="box-shadow:0 5px 0 ${option.shadow};">
+          <span class="num-digit">${option.value}</span>
+          <span class="num-word">${option.word}</span>
+        </button>
+      `).join("");
+
+      document.getElementById("receiptItem").textContent = `${level.missionItem} ${correctItem.emoji}`;
+      document.getElementById("receiptCount").textContent = `${level.missionCount} (${getCountWord(level, level.missionCount)})`;
+    }
+
+    function renderJourney() {
+      const isAtCastle = journeyPosition >= journeyPath.length - 1;
+      const board = document.getElementById("sugorokuBoard");
+
+      board.innerHTML = journeyPath.map((spot, index) => {
+        const state = [
+          index <= journeyPosition ? "reached" : "",
+          index === journeyPosition ? "current" : "",
+          spot.castle ? "castle" : ""
+        ].filter(Boolean).join(" ");
+
+        return `
+          <div class="map-square ${state}">
+            ${index === journeyPosition ? '<div class="player-piece">🎒</div>' : ""}
+            <div class="map-icon">${spot.icon}</div>
+            <div class="map-label">${spot.label}</div>
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("journeyMessage").innerHTML = isAtCastle
+        ? "おしろに<br>とうちゃく！"
+        : "1マス<br>すすんだ！";
+      document.getElementById("arrivalBadge").textContent = isAtCastle
+        ? "プリンセスにおとどけ完了！"
+        : `おしろまで あと${journeyPath.length - 1 - journeyPosition}マス`;
+      document.getElementById("successTitle").innerHTML = isAtCastle
+        ? "おしろに<br>とうちゃく！"
+        : "クリア<br>おめでとう！";
+      document.getElementById("successSub").textContent = isAtCastle
+        ? "Thank you! えいごの旅、だいせいこう！"
+        : "Thank you! おつかいせいこう！";
+      document.getElementById("adventureButton").textContent = isAtCastle
+        ? "🔄 はじめから あそぶ"
+        : "➡️ つぎのおつかいへ";
+    }
+
+    function setupButtons() {
+      document.getElementById("itemGrid").addEventListener("click", event => {
+        const button = event.target.closest("[data-item]");
+        if (!button || isChangingScreen) return;
+        checkItem(button.dataset.item, button);
+      });
+
+      document.getElementById("numberGrid").addEventListener("click", event => {
+        const button = event.target.closest("[data-count]");
+        if (!button || isChangingScreen) return;
+        checkNum(Number(button.dataset.count), button);
+      });
+    }
+
+    function prepareSpeech() {
+      if (!("speechSynthesis" in window) || speechReady) {
+        speechReady = true;
+        return;
+      }
+
+      voices = window.speechSynthesis.getVoices();
+      window.speechSynthesis.cancel();
+
+      const warmup = new SpeechSynthesisUtterance(" ");
+      warmup.lang = "en-US";
+      warmup.volume = 0;
+      window.speechSynthesis.speak(warmup);
+      speechReady = true;
+    }
+
+    function getEnglishVoices() {
+      voices = window.speechSynthesis.getVoices();
+      const englishVoices = voices.filter(voice => voice.lang && voice.lang.startsWith("en"));
+      const usVoices = englishVoices.filter(voice => voice.lang === "en-US");
+      const candidates = usVoices.length ? usVoices : englishVoices;
+      const naturalNameHints = [
+        "samantha",
+        "karen",
+        "daniel",
+        "moira",
+        "tessa",
+        "alex",
+        "google",
+        "microsoft",
+        "jenny",
+        "aria",
+        "guy"
+      ];
+
+      return candidates.sort((a, b) => {
+        const aName = a.name.toLowerCase();
+        const bName = b.name.toLowerCase();
+        const aScore = naturalNameHints.findIndex(hint => aName.includes(hint));
+        const bScore = naturalNameHints.findIndex(hint => bName.includes(hint));
+        const normalizedA = aScore === -1 ? 999 : aScore;
+        const normalizedB = bScore === -1 ? 999 : bScore;
+        return normalizedA - normalizedB;
+      });
+    }
+
+    function getEnglishVoice(speaker = "shopkeeper") {
+      const englishVoices = getEnglishVoices();
+      if (!englishVoices.length) return null;
+
+      const profile = voiceProfiles[speaker] || voiceProfiles.shopkeeper;
+      return englishVoices[profile.voiceOffset % englishVoices.length];
+    }
+
+    function speak(text, speaker = "shopkeeper") {
+      if (!speechReady || !("speechSynthesis" in window)) return;
+
+      const profile = voiceProfiles[speaker] || voiceProfiles.shopkeeper;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      utterance.rate = profile.rate;
+      utterance.pitch = profile.pitch;
+      utterance.voice = getEnglishVoice(speaker);
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function goTo(screenId, phraseKey) {
+      if (isChangingScreen) return;
+      isChangingScreen = true;
+
+      const current = document.querySelector(".screen.active");
+      const next = document.getElementById(screenId);
+
+      if (current === next) {
+        isChangingScreen = false;
+        return;
+      }
+
+      current.classList.add("leaving");
+
+      window.setTimeout(() => {
+        window.scrollTo(0, 0);
+        current.classList.remove("active", "leaving");
+        next.classList.add("active");
+        isChangingScreen = false;
+
+        if (phraseKey) {
+          window.setTimeout(() => speak(phrases[phraseKey], "shopkeeper"), 120);
+        }
+      }, 260);
+    }
+
+    function startShopping() {
+      if (isChangingScreen) return;
+
+      prepareSpeech();
+      speak(getMissionSpeech(getCurrentLevel()), "narrator");
+      isChangingScreen = true;
+
+      window.setTimeout(() => {
+        isChangingScreen = false;
+        goTo("screen2", "greeting");
+      }, 1450);
+    }
+
+    function showFeedback(id) {
+      const msg = document.getElementById(id + "-msg");
+      msg.classList.add("wrong");
+      clearTimeout(msg._timer);
+      msg._timer = setTimeout(() => msg.classList.remove("wrong"), 1600);
+    }
+
+    function playCorrect(button, nextScreenId, phraseKey) {
+      button.classList.remove("is-correct");
+      void button.offsetWidth;
+      button.classList.add("is-correct");
+      window.setTimeout(() => goTo(nextScreenId, phraseKey), 620);
+    }
+
+    function playWrong(button, feedbackId) {
+      button.classList.remove("is-wrong");
+      void button.offsetWidth;
+      button.classList.add("is-wrong");
+      showFeedback(feedbackId);
+      window.setTimeout(() => button.classList.remove("is-wrong"), 430);
+    }
+
+    function checkItem(name, button) {
+      speak(name, "learner");
+
+      if (name === getCurrentLevel().missionItem) {
+        playCorrect(button, "screen3", "quantity");
+      } else {
+        playWrong(button, "feedback2");
+      }
+    }
+
+    function checkNum(count, button) {
+      speak(numberToWord(count), "learner");
+
+      if (count === getCurrentLevel().missionCount) {
+        journeyPosition = Math.min(journeyPosition + 1, journeyPath.length - 1);
+        renderJourney();
+        playCorrect(button, "screen4", "thanks");
+      } else {
+        playWrong(button, "feedback3");
+      }
+    }
+
+    function resetAdventure() {
+      currentLevelIndex = 0;
+      journeyPosition = 0;
+      renderLevel();
+      renderJourney();
+    }
+
+    function nextAdventureStep() {
+      if (journeyPosition >= journeyPath.length - 1) {
+        resetAdventure();
+      } else {
+        currentLevelIndex = Math.min(journeyPosition, adventureLevels.length - 1);
+        renderLevel();
+      }
+
+      window.speechSynthesis && window.speechSynthesis.cancel();
+      document.querySelectorAll(".is-correct, .is-wrong").forEach(el => {
+        el.classList.remove("is-correct", "is-wrong");
+      });
+      goTo("screen1");
+    }
+
+    function restart() {
+      resetAdventure();
+      window.speechSynthesis && window.speechSynthesis.cancel();
+      document.querySelectorAll(".is-correct, .is-wrong").forEach(el => {
+        el.classList.remove("is-correct", "is-wrong");
+      });
+      goTo("screen1");
+    }
+
+    window.speechSynthesis && window.speechSynthesis.addEventListener("voiceschanged", () => {
+      voices = window.speechSynthesis.getVoices();
+    });
+
+    renderLevel();
+    renderJourney();
+    setupButtons();
+  </script>
 </body>
 </html>
