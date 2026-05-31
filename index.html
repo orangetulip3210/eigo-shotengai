@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>えいご商店街</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    :root {
+      --pink:    #FF8FAB;
+      --yellow:  #FFD166;
+      --mint:    #06D6A0;
+      --sky:     #74C2E1;
+      --purple:  #C77DFF;
+      --bg:      #FFF8F0;
+      --text:    #3D2B1F;
+      --shadow:  0 6px 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Arial Rounded MT Bold", sans-serif;
+      color: var(--text);
+    }
+
+    /* ===== SCREEN SYSTEM ===== */
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 100%;
+      padding: 24px 20px 32px;
+      animation: fadeIn 0.35s ease;
+    }
+    .screen.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== HEADER BADGE ===== */
+    .header-badge {
+      background: var(--purple);
+      color: #fff;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 5px 18px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      box-shadow: 0 3px 0 #9B51E0;
+    }
+
+    /* ===== SCREEN 1 ===== */
+    #screen1 {
+      background: linear-gradient(160deg, #FFF0FB 0%, #FFF8F0 60%, #F0FFF8 100%);
+    }
+
+    .title-block {
+      text-align: center;
+    }
+    .title-block .big-emoji {
+      font-size: 72px;
+      line-height: 1;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .title-block h1 {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--pink);
+      text-shadow: 0 3px 0 #FFB3C8;
+      line-height: 1.3;
+    }
+    .title-block .subtitle {
+      font-size: 13px;
+      color: #999;
+      margin-top: 6px;
+    }
+
+    .mission-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 22px 24px;
+      width: 100%;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .mission-card .mission-label {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--purple);
+      background: #F3E8FF;
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+    }
+    .mission-card .mission-text {
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.6;
+      color: var(--text);
+    }
+    .mission-card .mission-text .highlight {
+      color: var(--pink);
+      font-size: 26px;
+    }
+    .mission-card .mission-text .num-highlight {
+      color: var(--mint);
+      font-size: 26px;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn-primary {
+      width: 100%;
+      padding: 20px;
+      border: none;
+      border-radius: 20px;
+      font-size: 22px;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg, var(--pink), #FF6B9D);
+      box-shadow: var(--shadow) #C94D80;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .btn-primary:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #C94D80;
+    }
+
+    /* ===== SHOP SCREEN SHARED ===== */
+    #screen2, #screen3 {
+      background: linear-gradient(160deg, #E8F8FF 0%, #FFF8F0 100%);
+    }
+
+    /* ===== SHOPKEEPER ===== */
+    .shopkeeper-area {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .shop-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--sky);
+      background: #E0F4FF;
+      padding: 4px 14px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+    }
+    .keeper-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+    }
+    .keeper-emoji {
+      font-size: 68px;
+      line-height: 1;
+    }
+    .speech-bubble {
+      position: relative;
+      background: #fff;
+      border-radius: 18px;
+      padding: 14px 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+      max-width: 200px;
+    }
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -14px;
+      bottom: 20px;
+      border: 8px solid transparent;
+      border-right-color: #fff;
+    }
+    .speech-bubble .en-text {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--sky);
+    }
+    .speech-bubble .ja-text {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 2px;
+    }
+
+    /* ===== FEEDBACK ===== */
+    .feedback {
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .feedback-msg {
+      font-size: 15px;
+      font-weight: bold;
+      padding: 6px 18px;
+      border-radius: 20px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .feedback-msg.wrong {
+      background: #FFE8E8;
+      color: #E05C5C;
+      opacity: 1;
+    }
+
+    /* ===== ITEM GRID ===== */
+    .item-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .item-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 16px 8px;
+      border: 3px solid transparent;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 5px 0 #DDD;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .item-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #DDD;
+    }
+    .item-btn .item-emoji { font-size: 42px; line-height: 1; }
+    .item-btn .item-en   { font-size: 15px; font-weight: 900; color: var(--text); }
+
+    /* ===== NUMBER GRID ===== */
+    .number-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    .num-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 14px 4px;
+      border: none;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 5px 0 #DDD;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .num-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #DDD;
+    }
+    .num-btn .num-digit { font-size: 30px; font-weight: 900; color: var(--text); }
+    .num-btn .num-word  { font-size: 10px; font-weight: bold; color: #AAA; }
+
+    /* ===== SCREEN 4 (SUCCESS) ===== */
+    #screen4 {
+      background: linear-gradient(160deg, #F0FFF8 0%, #FFF8F0 100%);
+      text-align: center;
+    }
+    .success-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .success-area .big-star {
+      font-size: 80px;
+      animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .success-area h2 {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--mint);
+      text-shadow: 0 4px 0 #03B888;
+    }
+    .success-area .success-sub {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .receipt-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px 28px;
+      width: 100%;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    }
+    .receipt-card .receipt-title {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--mint);
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px dashed #EEE;
+    }
+    .receipt-row:last-child { border-bottom: none; }
+    .receipt-row .r-label { font-size: 14px; color: #888; }
+    .receipt-row .r-value { font-size: 16px; font-weight: 900; color: var(--text); }
+
+    .btn-retry {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: 20px;
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg, var(--mint), #04C58E);
+      box-shadow: var(--shadow) #039E72;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .btn-retry:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #039E72;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== SCREEN 1: おつかいメモ ===== -->
+<div id="screen1" class="screen active">
+
+  <div class="header-badge">🏪 えいご商店街</div>
+
+  <div class="title-block">
+    <span class="big-emoji">🎒</span>
+    <h1>はじめての<br>おつかい！</h1>
+    <p class="subtitle">えいごでお買い物しよう</p>
+  </div>
+
+  <div class="mission-card">
+    <div class="mission-label">📋 おつかいメモ</div>
+    <div class="mission-text">
+      <span class="highlight">Apple 🍎</span> を<br>
+      <span class="num-highlight">3つ</span> 買ってきてね！
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="goTo('screen2')">
+    🛒 おみせにいく
+  </button>
+
+</div>
+
+<!-- ===== SCREEN 2: アイテム選択 ===== -->
+<div id="screen2" class="screen">
+
+  <div class="header-badge">🏪 えいご商店街</div>
+
+  <div class="shopkeeper-area">
+    <div class="shop-title">🍓 フルーツやさん</div>
+    <div class="keeper-row">
+      <div class="keeper-emoji">🐰</div>
+      <div class="speech-bubble">
+        <div class="en-text">Hello!<br>What do you want?</div>
+        <div class="ja-text">なにがほしいですか？</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback" id="feedback2">
+    <div class="feedback-msg" id="feedback2-msg">😅 Oops! 違うよ、もう一度！</div>
+  </div>
+
+  <div class="item-grid">
+    <button class="item-btn" onclick="checkItem('Apple')" style="box-shadow:0 5px 0 #FFB3A0;">
+      <span class="item-emoji">🍎</span>
+      <span class="item-en">Apple</span>
+    </button>
+    <button class="item-btn" onclick="checkItem('Banana')" style="box-shadow:0 5px 0 #FFE08A;">
+      <span class="item-emoji">🍌</span>
+      <span class="item-en">Banana</span>
+    </button>
+    <button class="item-btn" onclick="checkItem('Grape')" style="box-shadow:0 5px 0 #C9A8FF;">
+      <span class="item-emoji">🍇</span>
+      <span class="item-en">Grape</span>
+    </button>
+  </div>
+
+</div>
+
+<!-- ===== SCREEN 3: 個数選択 ===== -->
+<div id="screen3" class="screen">
+
+  <div class="header-badge">🏪 えいご商店街</div>
+
+  <div class="shopkeeper-area">
+    <div class="shop-title">🍓 フルーツやさん</div>
+    <div class="keeper-row">
+      <div class="keeper-emoji">🐰</div>
+      <div class="speech-bubble">
+        <div class="en-text">How many?</div>
+        <div class="ja-text">いくつほしいですか？</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback" id="feedback3">
+    <div class="feedback-msg" id="feedback3-msg">😅 Oops! 違うよ、もう一度！</div>
+  </div>
+
+  <div class="number-grid">
+    <button class="num-btn" onclick="checkNum(1)" style="box-shadow:0 5px 0 #A8D8FF;">
+      <span class="num-digit">1</span>
+      <span class="num-word">one</span>
+    </button>
+    <button class="num-btn" onclick="checkNum(2)" style="box-shadow:0 5px 0 #FFD6A8;">
+      <span class="num-digit">2</span>
+      <span class="num-word">two</span>
+    </button>
+    <button class="num-btn" onclick="checkNum(3)" style="box-shadow:0 5px 0 #A8F0D8;">
+      <span class="num-digit">3</span>
+      <span class="num-word">three</span>
+    </button>
+    <button class="num-btn" onclick="checkNum(4)" style="box-shadow:0 5px 0 #FFA8C8;">
+      <span class="num-digit">4</span>
+      <span class="num-word">four</span>
+    </button>
+    <button class="num-btn" onclick="checkNum(5)" style="box-shadow:0 5px 0 #D8A8FF;">
+      <span class="num-digit">5</span>
+      <span class="num-word">five</span>
+    </button>
+  </div>
+
+</div>
+
+<!-- ===== SCREEN 4: 成功！ ===== -->
+<div id="screen4" class="screen">
+
+  <div class="header-badge">🏪 えいご商店街</div>
+
+  <div class="success-area">
+    <div class="big-star">🌟</div>
+    <h2>できたよ！<br>えらい！</h2>
+    <p class="success-sub">おつかいせいこう！🎉</p>
+  </div>
+
+  <div class="receipt-card">
+    <div class="receipt-title">🧾 おかいものメモ</div>
+    <div class="receipt-row">
+      <span class="r-label">えいご</span>
+      <span class="r-value">Apple 🍎</span>
+    </div>
+    <div class="receipt-row">
+      <span class="r-label">かず</span>
+      <span class="r-value">3 (three)</span>
+    </div>
+    <div class="receipt-row">
+      <span class="r-label">つかえたことば</span>
+      <span class="r-value">2 words ⭐️</span>
+    </div>
+  </div>
+
+  <button class="btn-retry" onclick="restart()">
+    🔄 もういちど あそぶ
+  </button>
+
+</div>
+
+<script>
+  function goTo(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+  }
+
+  function showFeedback(id) {
+    const msg = document.getElementById(id + '-msg');
+    msg.classList.add('wrong');
+    clearTimeout(msg._timer);
+    msg._timer = setTimeout(() => msg.classList.remove('wrong'), 1800);
+  }
+
+  function checkItem(name) {
+    if (name === 'Apple') {
+      goTo('screen3');
+    } else {
+      showFeedback('feedback2');
+    }
+  }
+
+  function checkNum(n) {
+    if (n === 3) {
+      goTo('screen4');
+    } else {
+      showFeedback('feedback3');
+    }
+  }
+
+  function restart() {
+    goTo('screen1');
+  }
+</script>
+</body>
+</html>
