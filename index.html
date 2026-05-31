@@ -308,6 +308,162 @@
       font-weight: 700;
     }
 
+    /* ===== v3: 継続の仕組み（ステータス・マイタウン・連続記録） ===== */
+    #screen1 {
+      gap: 10px;
+      padding-top: 16px;
+      padding-bottom: 18px;
+    }
+
+    #screen1 .town-illustration {
+      height: 92px;
+    }
+
+    #screen1 .title-block {
+      gap: 4px;
+    }
+
+    #screen1 .mission-card {
+      padding: 15px 20px;
+    }
+
+    .status-row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 13px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
+      background: #fff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .status-chip.streak {
+      color: #ff7a30;
+      background: #fff1e4;
+    }
+
+    .status-chip.streak.hot {
+      animation: flameHot 1s ease-in-out infinite;
+    }
+
+    .status-chip.town {
+      color: #2e9e63;
+      background: #e7fbef;
+    }
+
+    @keyframes flameHot {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .town-strip {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 3px solid #d7ecff;
+      border-radius: 16px;
+      padding: 8px 10px 9px;
+    }
+
+    .town-strip-title {
+      font-size: 11px;
+      font-weight: 900;
+      color: #5b86b8;
+      letter-spacing: 1px;
+    }
+
+    .town-row {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      align-items: flex-end;
+      scrollbar-width: none;
+    }
+
+    .town-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .town-building {
+      flex: 0 0 auto;
+      font-size: 26px;
+      line-height: 1;
+      filter: drop-shadow(0 3px 0 rgba(91, 59, 44, 0.12));
+      animation: buildingPop 0.5s cubic-bezier(0.2, 1.5, 0.32, 1) both;
+    }
+
+    .town-building.locked {
+      opacity: 0.26;
+      filter: grayscale(1);
+      animation: none;
+    }
+
+    @keyframes buildingPop {
+      0% { transform: translateY(8px) scale(0.4); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .town-complete {
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--coral);
+    }
+
+    .resume-note {
+      margin-top: 9px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #2e9e63;
+      background: #e7fbef;
+      border-radius: 999px;
+      padding: 5px 12px;
+      display: none;
+    }
+
+    .resume-note.show {
+      display: inline-block;
+    }
+
+    .btn-reset {
+      margin-top: -4px;
+      background: none;
+      border: none;
+      color: #b59a86;
+      font-size: 12px;
+      font-weight: 900;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .streak-banner {
+      display: none;
+      font-size: 14px;
+      font-weight: 900;
+      color: #ff7a30;
+      background: #fff1e4;
+      border-radius: 999px;
+      padding: 6px 16px;
+    }
+
+    .streak-banner.show {
+      display: inline-block;
+      animation: boardPop 0.7s cubic-bezier(0.2, 1.5, 0.32, 1) both;
+    }
+
     .mission-card,
     .receipt-card {
       background: rgba(255, 255, 255, 0.94);
@@ -1159,6 +1315,17 @@
     <section id="screen1" class="screen active">
       <div class="header-badge" data-app-name>🏪 えいごおつかいタウン</div>
 
+      <div class="status-row">
+        <span class="status-chip streak" id="streakChip">🔥 れんぞく 0日</span>
+        <span class="status-chip town" id="townChip">🏘️ タウン Lv.0</span>
+      </div>
+
+      <div class="town-strip">
+        <div class="town-strip-title">🏘️ ぼく・わたしのまち</div>
+        <div class="town-row" id="townRow"></div>
+        <div class="town-complete" id="townComplete" style="display:none;">🎉 まちが かんせい したよ！</div>
+      </div>
+
       <div class="title-block">
         <div class="town-illustration" aria-hidden="true">
           <div class="mini-shop">
@@ -1174,7 +1341,7 @@
           <div class="sparkle one">✦</div>
           <div class="sparkle two">✦</div>
         </div>
-        <h1>はじめての<br>おつかい！</h1>
+        <h1 id="titleHeading">はじめての<br>おつかい！</h1>
         <p class="subtitle">えいごでお買い物しよう</p>
       </div>
 
@@ -1182,11 +1349,13 @@
         <div class="mission-label">📋 おつかいメモ</div>
         <div class="mission-text" id="missionText"></div>
         <div class="mission-story" id="missionStory"></div>
+        <div class="resume-note" id="resumeNote">おかえり！つづきから あそべるよ ▶</div>
       </div>
 
       <button class="btn-primary" type="button" onclick="startShopping()">
         🛒 おみせにいく
       </button>
+      <button class="btn-reset" type="button" onclick="confirmReset()">さいしょから やりなおす</button>
     </section>
 
     <section id="screen2" class="screen">
@@ -1263,6 +1432,7 @@
         </div>
         <h2 id="successTitle">クリア<br>おめでとう！</h2>
         <p class="success-sub" id="successSub">Thank you! おつかいせいこう！</p>
+        <div class="streak-banner" id="streakBanner"></div>
       </div>
 
       <div class="journey-card">
@@ -1286,8 +1456,8 @@
           <span class="r-value" id="receiptCount"></span>
         </div>
         <div class="receipt-row">
-          <span class="r-label">つかえたことば</span>
-          <span class="r-value">2 words ⭐</span>
+          <span class="r-label">おぼえたことば</span>
+          <span class="r-value" id="receiptWords">0 words ⭐</span>
         </div>
       </div>
 
@@ -1395,6 +1565,135 @@
     let voices = [];
     let isChangingScreen = false;
 
+    /* ===== v3: 継続の仕組み（保存・連続記録・街づくり） ===== */
+    const STORAGE_KEY = "eigo-otsukai-town:v1";
+    let streak = 0;
+    let lastClearDate = null;
+    let totalClears = 0;
+    let learnedWords = [];
+    let pendingStreakMessage = "";
+
+    const townBuildings = ["🏠", "🏪", "🌳", "🥐", "🏫", "🌷", "⛲", "🎡", "🏥", "🎪", "🌈", "🏰"];
+
+    function todayStr() {
+      const d = new Date();
+      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    }
+
+    function dayDiff(from, to) {
+      const a = from.split("-").map(Number);
+      const b = to.split("-").map(Number);
+      const da = new Date(a[0], a[1] - 1, a[2]);
+      const db = new Date(b[0], b[1] - 1, b[2]);
+      return Math.round((db - da) / 86400000);
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        currentLevelIndex = Math.min(Math.max(data.currentLevelIndex || 0, 0), adventureLevels.length - 1);
+        journeyPosition = Math.min(Math.max(data.journeyPosition || 0, 0), journeyPath.length - 1);
+        streak = data.streak || 0;
+        lastClearDate = data.lastClearDate || null;
+        totalClears = data.totalClears || 0;
+        learnedWords = Array.isArray(data.learnedWords) ? data.learnedWords : [];
+        return (journeyPosition > 0 || totalClears > 0);
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentLevelIndex,
+          journeyPosition,
+          streak,
+          lastClearDate,
+          totalClears,
+          learnedWords
+        }));
+      } catch (e) {}
+    }
+
+    function refreshStreakOnLoad() {
+      if (!lastClearDate) {
+        streak = 0;
+        return;
+      }
+      // 2日以上あいたら連続記録はリセット（0日に戻す）
+      if (dayDiff(lastClearDate, todayStr()) >= 2) {
+        streak = 0;
+      }
+    }
+
+    function registerDailyClear() {
+      const today = todayStr();
+      let milestone = false;
+
+      if (lastClearDate !== today) {
+        if (lastClearDate && dayDiff(lastClearDate, today) === 1) {
+          streak += 1;
+        } else {
+          streak = 1;
+        }
+        lastClearDate = today;
+        if (streak === 3 || streak === 7 || (streak > 7 && streak % 7 === 0)) {
+          milestone = true;
+        }
+      }
+
+      totalClears += 1;
+      pendingStreakMessage = milestone ? `🔥 ${streak}日れんぞく たっせい！すごい！` : "";
+    }
+
+    function renderTown() {
+      const unlocked = Math.min(totalClears, townBuildings.length);
+      const row = document.getElementById("townRow");
+      if (row) {
+        row.innerHTML = townBuildings.map((building, index) => {
+          const locked = index >= unlocked ? "locked" : "";
+          return `<span class="town-building ${locked}">${building}</span>`;
+        }).join("");
+      }
+
+      const complete = document.getElementById("townComplete");
+      if (complete) {
+        complete.style.display = unlocked >= townBuildings.length ? "block" : "none";
+      }
+
+      const streakChip = document.getElementById("streakChip");
+      if (streakChip) {
+        streakChip.textContent = `🔥 れんぞく ${streak}日`;
+        streakChip.classList.toggle("hot", streak >= 3);
+      }
+
+      const townChip = document.getElementById("townChip");
+      if (townChip) {
+        townChip.textContent = `🏘️ タウン Lv.${unlocked}`;
+      }
+    }
+
+    function confirmReset() {
+      if (!window.confirm("さいしょから やりなおしますか？\n（タウンや れんぞくきろくも きえます）")) return;
+      currentLevelIndex = 0;
+      journeyPosition = 0;
+      streak = 0;
+      lastClearDate = null;
+      totalClears = 0;
+      learnedWords = [];
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {}
+      const note = document.getElementById("resumeNote");
+      if (note) note.classList.remove("show");
+      renderLevel();
+      renderJourney();
+      renderTown();
+    }
+
     const phrases = {
       greeting: "Hello! What do you want?",
       quantity: "How many?",
@@ -1438,6 +1737,11 @@
       document.querySelectorAll(".shop-title").forEach(el => {
         el.textContent = `${level.shopIcon} ${level.shop}`;
       });
+
+      const heading = document.getElementById("titleHeading");
+      if (heading) {
+        heading.innerHTML = totalClears > 0 ? "つづきの<br>おつかい！" : "はじめての<br>おつかい！";
+      }
 
       document.getElementById("missionText").innerHTML = `
         <span class="highlight">${level.missionItem} ${correctItem.emoji}</span> を<br>
@@ -1498,6 +1802,22 @@
       document.getElementById("adventureButton").textContent = isAtCastle
         ? "🔄 はじめから あそぶ"
         : "➡️ つぎのおつかいへ";
+
+      const wordsEl = document.getElementById("receiptWords");
+      if (wordsEl) {
+        wordsEl.textContent = `${learnedWords.length} words ⭐`;
+      }
+
+      const banner = document.getElementById("streakBanner");
+      if (banner) {
+        if (pendingStreakMessage) {
+          banner.textContent = pendingStreakMessage;
+          banner.classList.add("show");
+        } else {
+          banner.classList.remove("show");
+          banner.textContent = "";
+        }
+      }
     }
 
     function setupButtons() {
@@ -1656,8 +1976,15 @@
       speak(numberToWord(count), "learner");
 
       if (count === getCurrentLevel().missionCount) {
+        const level = getCurrentLevel();
+        if (!learnedWords.includes(level.missionItem)) {
+          learnedWords.push(level.missionItem);
+        }
         journeyPosition = Math.min(journeyPosition + 1, journeyPath.length - 1);
+        registerDailyClear();
         renderJourney();
+        renderTown();
+        saveState();
         playCorrect(button, "screen4", "thanks");
       } else {
         playWrong(button, "feedback3");
@@ -1665,10 +1992,13 @@
     }
 
     function resetAdventure() {
+      // すごろくだけ最初に戻す。タウン・連続記録・累計クリアは残す。
       currentLevelIndex = 0;
       journeyPosition = 0;
+      pendingStreakMessage = "";
       renderLevel();
       renderJourney();
+      saveState();
     }
 
     function nextAdventureStep() {
@@ -1676,6 +2006,7 @@
         resetAdventure();
       } else {
         currentLevelIndex = Math.min(journeyPosition, adventureLevels.length - 1);
+        pendingStreakMessage = "";
         renderLevel();
       }
 
@@ -1683,6 +2014,8 @@
       document.querySelectorAll(".is-correct, .is-wrong").forEach(el => {
         el.classList.remove("is-correct", "is-wrong");
       });
+      renderTown();
+      saveState();
       goTo("screen1");
     }
 
@@ -1699,9 +2032,19 @@
       voices = window.speechSynthesis.getVoices();
     });
 
+    const resumed = loadState();
+    refreshStreakOnLoad();
     renderLevel();
     renderJourney();
+    renderTown();
     setupButtons();
+
+    if (resumed) {
+      const note = document.getElementById("resumeNote");
+      if (note) note.classList.add("show");
+    }
+
+    saveState();
   </script>
 </body>
 </html>
